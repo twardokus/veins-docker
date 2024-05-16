@@ -1,0 +1,7 @@
+services:
+  veins:
+    build: .
+    volumes:
+      - type: bind
+        source: ./results
+        target: /root/veins-results
