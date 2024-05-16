@@ -13,7 +13,8 @@ RUN apt -y install wget
 RUN wget https://sourceforge.net/projects/sumo/files/sumo/version%201.8.0/sumo-src-1.8.0.tar.gz/download -O sumo
 RUN tar -xf sumo
 RUN cd sumo-1.8.0 && mkdir build/cmake-build && cd build/cmake-build && cmake ../.. && make
-RUN echo "export SUMO_HOME=/root/sumo-1.8.0/bin" >> /root/.bashrc
+ENV SUMO_HOME=/root/sumo-1.8.0/bin
+ENV PATH="${SUMO_HOME}:${PATH}"
 RUN rm -rf sumo
 
 # Install OMNET++ 5.6.2
@@ -35,3 +36,17 @@ WORKDIR /root
 RUN wget https://veins.car2x.org/download/veins-5.2.zip
 RUN unzip veins-5.2.zip
 
+WORKDIR /root/veins-veins-5.2
+RUN ./configure
+RUN make
+
+
+# Cleanup
+WORKDIR /root
+RUN rm omnetpp-5.6.2-src-linux.tgz veins-5.2.zip
+
+# Run test
+WORKDIR /root
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chmod +x /root/entrypoint.sh
+ENTRYPOINT ["/root/entrypoint.sh"]
